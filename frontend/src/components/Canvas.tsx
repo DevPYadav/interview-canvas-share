@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import type { CanvasDocument, CanvasElement } from '../types';
 import './Canvas.css';
 
@@ -8,50 +8,93 @@ interface CanvasProps {
   onUpdate: (canvas: CanvasDocument) => void;
 }
 
+type Tool = 'select' | 'rectangle' | 'database' | 'connector';
+
 function Canvas({ canvas, readonly, onUpdate }: CanvasProps) {
-  const [selectedElement, setSelectedElement] = useState<CanvasElement | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [tool, setTool] = useState<Tool>('select');
+  const svgRef = useRef<SVGSVGElement>(null);
+  // Drag state lives in a ref so mouse-move handlers never see stale values
+  const drag = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
+
+  // Convert screen coordinates to SVG (viewBox) coordinates
+  const toSvgPoint = (e: React.MouseEvent) => {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, y: 0 };
+    const pt = svg.createSVGPoint();
+    pt.x = e.clientX;
+    pt.y = e.clientY;
+    const p = pt.matrixTransform(ctm.inverse());
+    return { x: p.x, y: p.y };
+  };
 
   const handleElementMouseDown = (e: React.MouseEvent, element: CanvasElement) => {
     if (readonly) return;
-    
     e.stopPropagation();
-    setSelectedElement(element);
-    setIsDragging(true);
-    
-    const rect = (e.target as HTMLElement).getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    setSelectedId(element.id);
+    if (tool !== 'select') return;
+    const p = toSvgPoint(e);
+    drag.current = { id: element.id, offsetX: p.x - element.x, offsetY: p.y - element.y };
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !selectedElement || !canvasRef.current) return;
-
-    const canvasRect = canvasRef.current.getBoundingClientRect();
-    const newX = e.clientX - canvasRect.left - dragOffset.x;
-    const newY = e.clientY - canvasRect.top - dragOffset.y;
-
-    const updatedElements = canvas.elements.map(el =>
-      el.id === selectedElement.id
-        ? { ...el, x: newX, y: newY, updated_at: new Date().toISOString() }
+    if (!drag.current || readonly) return;
+    const p = toSvgPoint(e);
+    const { id, offsetX, offsetY } = drag.current;
+    const updatedElements = canvas.elements.map((el) =>
+      el.id === id
+        ? { ...el, x: p.x - offsetX, y: p.y - offsetY, updated_at: new Date().toISOString() }
         : el
     );
-
     onUpdate({ ...canvas, elements: updatedElements });
   };
 
   const handleMouseUp = () => {
-    setIsDragging(false);
+    drag.current = null;
   };
 
-  const handleCanvasClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement) === canvasRef.current) {
-      setSelectedElement(null);
+  // Click on empty canvas: deselect (Select tool) or add an element (other tools)
+  const handleBackgroundMouseDown = (e: React.MouseEvent) => {
+    if (readonly) return;
+    if (tool === 'select') {
+      setSelectedId(null);
+      return;
     }
+    const p = toSvgPoint(e);
+    const now = new Date().toISOString();
+    const base = { id: `el-${Date.now()}`, created_at: now, updated_at: now };
+    let newElement: CanvasElement;
+
+    if (tool === 'connector') {
+      newElement = { ...base, type: 'connector', x: p.x, y: p.y } as unknown as CanvasElement;
+    } else if (tool === 'database') {
+      newElement = {
+        ...base,
+        type: 'database',
+        x: p.x - 60,
+        y: p.y - 40,
+        width: 120,
+        height: 80,
+        label: 'Database',
+      } as unknown as CanvasElement;
+    } else {
+      newElement = {
+        ...base,
+        type: 'rectangle',
+        x: p.x - 60,
+        y: p.y - 40,
+        width: 120,
+        height: 80,
+        label: 'Rectangle',
+        color: '#6B7280',
+      } as unknown as CanvasElement;
+    }
+
+    onUpdate({ ...canvas, elements: [...canvas.elements, newElement] });
+    setSelectedId(newElement.id);
+    setTool('select');
   };
 
   const getComponentIcon = (type: string) => {
@@ -78,15 +121,31 @@ function Canvas({ canvas, readonly, onUpdate }: CanvasProps) {
     }
   };
 
-  return (
-    <div
-      ref={canvasRef}
-      className="canvas"
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onClick={handleCanvasClick}
+  const toolButton = (t: Tool, label: string) => (
+    <button
+      className={`tool-button${tool === t ? ' active' : ''}`}
+      title={label}
+      onClick={() => setTool(t)}
     >
-      <svg className="canvas-svg">
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="canvas" onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
+      <svg
+        ref={svgRef}
+        className="canvas-svg"
+        viewBox="0 0 700 700"
+        preserveAspectRatio="xMidYMin meet"
+        onMouseDown={handleBackgroundMouseDown}
+        style={{ cursor: readonly ? 'default' : tool === 'select' ? 'default' : 'crosshair' }}
+      >
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#6B7280" />
+          </marker>
+        </defs>
         {canvas.elements.map((element) => (
           <g key={element.id}>
             {element.type === 'connector' ? (
@@ -110,8 +169,8 @@ function Canvas({ canvas, readonly, onUpdate }: CanvasProps) {
                   width={element.width || 120}
                   height={element.height || 80}
                   fill={element.color || getComponentColor(element.type)}
-                  stroke={selectedElement?.id === element.id ? '#3B82F6' : 'none'}
-                  strokeWidth={selectedElement?.id === element.id ? 3 : 0}
+                  stroke={selectedId === element.id ? '#3B82F6' : 'none'}
+                  strokeWidth={selectedId === element.id ? 3 : 0}
                   rx={element.type === 'rounded-rectangle' ? 8 : 4}
                 />
                 <text
@@ -122,6 +181,7 @@ function Canvas({ canvas, readonly, onUpdate }: CanvasProps) {
                   fill="white"
                   fontSize="14"
                   fontWeight="500"
+                  style={{ pointerEvents: 'none' }}
                 >
                   {element.label || getComponentIcon(element.type)}
                 </text>
@@ -129,25 +189,13 @@ function Canvas({ canvas, readonly, onUpdate }: CanvasProps) {
             )}
           </g>
         ))}
-        <defs>
-          <marker
-            id="arrowhead"
-            markerWidth="10"
-            markerHeight="7"
-            refX="9"
-            refY="3.5"
-            orient="auto"
-          >
-            <polygon points="0 0, 10 3.5, 0 7" fill="#6B7280" />
-          </marker>
-        </defs>
       </svg>
       {!readonly && (
         <div className="canvas-toolbar">
-          <button className="tool-button" title="Select">Select</button>
-          <button className="tool-button" title="Rectangle">Rectangle</button>
-          <button className="tool-button" title="Database">Database</button>
-          <button className="tool-button" title="Connector">Connector</button>
+          {toolButton('select', 'Select')}
+          {toolButton('rectangle', 'Rectangle')}
+          {toolButton('database', 'Database')}
+          {toolButton('connector', 'Connector')}
         </div>
       )}
     </div>

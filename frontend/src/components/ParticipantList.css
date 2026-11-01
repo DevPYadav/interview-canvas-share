@@ -73,3 +73,26 @@
 .participant-status.offline {
   color: #9ca3af;
 }
+
+.participant-avatar,
+.participant-status {
+  flex-shrink: 0;
+}
+
+.participant-info {
+  min-width: 0;
+}
+
+.participant-item {
+  min-width: 0;
+}
+
+.participant-item {
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem;
+}
+
+.participant-info {
+  flex: 1;
+  min-width: 0;
+}

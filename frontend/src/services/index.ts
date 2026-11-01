@@ -1,4 +1,4 @@
-import { ApiService } from './api';
+import type { ApiService } from './api';
 import { mockApiService } from './mockApi';
 
 // Export the mock API service as the default implementation

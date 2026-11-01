@@ -1,10 +1,13 @@
 .dashboard {
+  text-align: left;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
 }
 
 .dashboard-header {
+  flex-wrap: wrap;
+  gap: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -13,6 +16,17 @@
 
 .dashboard-header h1 {
   font-size: 2rem;
+  color: #1f2937;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.dashboard-header input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  background: white;
   color: #1f2937;
 }
 
@@ -38,6 +52,9 @@
 }
 
 .session-card {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
@@ -96,6 +113,7 @@
 }
 
 .session-actions {
+  margin-top: auto;
   display: flex;
   gap: 0.5rem;
 }
@@ -105,6 +123,7 @@
   padding: 0.5rem;
   border: 1px solid #e5e7eb;
   background: white;
+  color: #374151;
   border-radius: 0.375rem;
   cursor: pointer;
   font-size: 0.875rem;
