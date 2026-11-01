@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  title: Interview Canvas API
+  version: 1.0.0
+  description: API for the System Design Interview Platform
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+
+paths:
+  /:
+    get:
+      summary: API root
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+
+  /v1/sessions:
+    get:
+      summary: List sessions
+      responses:
+        '200':
+          description: List of sessions
+    post:
+      summary: Create session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                prompt:
+                  type: string
+      responses:
+        '201':
+          description: Session created
+
+  /v1/sessions/{sessionId}:
+    get:
+      summary: Get session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session details
+    patch:
+      summary: Update session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Session updated
+
+  /v1/sessions/{sessionId}/start:
+    post:
+      summary: Start session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session started
+
+  /v1/sessions/{sessionId}/end:
+    post:
+      summary: End session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session ended
+
+  /v1/sessions/{sessionId}/canvas:
+    get:
+      summary: Get canvas
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Canvas data
+    post:
+      summary: Update canvas
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Canvas updated

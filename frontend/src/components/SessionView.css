@@ -1,0 +1,18 @@
+.session-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.session-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.canvas-container {
+  flex: 1;
+  background: #f9fafb;
+  position: relative;
+  overflow: hidden;
+}

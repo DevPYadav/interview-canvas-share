@@ -1,0 +1,41 @@
+.prompt-panel {
+  width: 300px;
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+}
+
+.prompt-toggle {
+  padding: 0.75rem 1rem;
+  background: white;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.prompt-toggle:hover {
+  background-color: #f9fafb;
+}
+
+.prompt-content {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.prompt-content p {
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.prompt-panel.collapsed .prompt-content {
+  display: none;
+}

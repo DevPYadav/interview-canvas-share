@@ -1,0 +1,75 @@
+.participant-list {
+  width: 250px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.participant-list h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.participants {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.participant-item:hover {
+  background-color: #f9fafb;
+}
+
+.participant-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.participant-info {
+  flex: 1;
+}
+
+.participant-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.participant-role {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: capitalize;
+}
+
+.participant-status {
+  font-size: 1rem;
+}
+
+.participant-status.online {
+  color: #10b981;
+}
+
+.participant-status.offline {
+  color: #9ca3af;
+}
