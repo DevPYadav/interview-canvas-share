@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database configuration - database-agnostic
-DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///interview_canvas.db')
+# Check for SDIP_DATABASE_URL first, then DATABASE_URL, then default to SQLite
+DATABASE_URL = os.getenv('SDIP_DATABASE_URL') or os.getenv('DATABASE_URL', 'sqlite:///interview_canvas.db')
 
 # Create engine - database-agnostic (works with SQLite, Postgres, etc.)
 # For PostgreSQL, add connection pooling and SSL configuration

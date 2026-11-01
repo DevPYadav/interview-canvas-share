@@ -1,4 +1,4 @@
-.PHONY: help install install-frontend install-backend dev dev-frontend dev-backend test test-frontend test-backend build clean
+.PHONY: help install install-frontend install-backend dev dev-frontend dev-backend run test test-frontend test-backend build clean
 
 help:
 	@echo "Interview Canvas Application"
@@ -10,6 +10,7 @@ help:
 	@echo "  make dev               - Start both frontend and backend"
 	@echo "  make dev-frontend      - Start frontend only (port 5173)"
 	@echo "  make dev-backend       - Start backend only (port 8000)"
+	@echo "  make run               - Start backend with PostgreSQL (uses DATABASE_URL or SDIP_DATABASE_URL)"
 	@echo "  make test              - Run all tests"
 	@echo "  make test-frontend     - Run frontend tests"
 	@echo "  make test-backend      - Run backend tests"
@@ -40,6 +41,10 @@ dev-frontend:
 
 dev-backend:
 	@echo "Starting backend on http://localhost:8000..."
+	@cd backend && uv run uvicorn main:app --reload
+
+run:
+	@echo "Starting backend with PostgreSQL..."
 	@cd backend && uv run uvicorn main:app --reload
 
 test:
