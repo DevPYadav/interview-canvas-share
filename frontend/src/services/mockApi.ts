@@ -1,6 +1,7 @@
 import { ApiService } from './api';
 import { mockUser, mockSessions, mockParticipants, mockCanvasDocument, mockGuestLink } from './mockData';
 import type { User, InterviewSession, Participant, CanvasDocument, GuestLink } from '../types';
+import type { ApiService } from './api';
 
 class MockWebSocket {
   private handlers: Map<string, (data: any) => void> = new Map();
