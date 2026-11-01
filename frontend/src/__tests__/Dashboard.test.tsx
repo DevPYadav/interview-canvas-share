@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Dashboard from '../components/Dashboard';
-import { User } from '../types';
+import type { User } from '../types';
 
 describe('Dashboard', () => {
   const mockUser: User = {

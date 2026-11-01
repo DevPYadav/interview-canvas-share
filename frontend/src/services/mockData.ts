@@ -1,4 +1,4 @@
-import { User, InterviewSession, Participant, CanvasDocument, CanvasElement, GuestLink } from '../types';
+import type { User, InterviewSession, Participant, CanvasDocument, CanvasElement, GuestLink } from '../types';
 
 export const mockUser: User = {
   id: 'user-1',

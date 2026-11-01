@@ -1,5 +1,5 @@
 import { FaPlay, FaStop, FaArrowLeft, FaShare } from 'react-icons/fa';
-import { InterviewSession, User } from '../types';
+import type { InterviewSession, User } from '../types';
 import './SessionHeader.css';
 
 interface SessionHeaderProps {

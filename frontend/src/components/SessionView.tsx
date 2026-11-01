@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { InterviewSession, User, CanvasDocument, CanvasElement } from '../types';
+import type { InterviewSession, User, CanvasDocument, CanvasElement } from '../types';
 import { apiService } from '../services';
 import Canvas from './Canvas';
 import SessionHeader from './SessionHeader';

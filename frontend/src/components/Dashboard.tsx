@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { InterviewSession, User } from '../types';
+import type { InterviewSession, User } from '../types';
 import { apiService } from '../services';
 import './Dashboard.css';
 

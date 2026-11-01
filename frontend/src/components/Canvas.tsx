@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { CanvasDocument, CanvasElement } from '../types';
+import type { CanvasDocument, CanvasElement } from '../types';
 import './Canvas.css';
 
 interface CanvasProps {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockApiService } from '../services/mockApi';
-import { User, InterviewSession } from '../types';
+import type { User, InterviewSession } from '../types';
 
 describe('MockApiService', () => {
   beforeEach(() => {

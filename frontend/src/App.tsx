@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiService } from './services';
-import { User, InterviewSession } from './types';
+import type { User, InterviewSession } from './types';
 import Dashboard from './components/Dashboard';
 import SessionView from './components/SessionView';
 import JoinLobby from './components/JoinLobby';

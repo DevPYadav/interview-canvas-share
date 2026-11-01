@@ -1,4 +1,4 @@
-import { Participant } from '../types';
+import type { Participant } from '../types';
 import './ParticipantList.css';
 
 interface ParticipantListProps {

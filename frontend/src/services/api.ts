@@ -1,4 +1,4 @@
-import { User, InterviewSession, Participant, CanvasDocument, GuestLink } from '../types';
+import type { User, InterviewSession, Participant, CanvasDocument, GuestLink } from '../types';
 
 export interface ApiService {
   // Authentication
