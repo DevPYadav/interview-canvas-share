@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///interview_canvas.db
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./backend/interview_canvas.db:/app/backend/interview_canvas.db
+    restart: unless-stopped

@@ -17,9 +17,26 @@ SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base = declarative_base()
 
 # Enums
-SessionState = SQLEnum('draft', 'live', 'ended', 'archived', name='sessionstate')
-UserRole = SQLEnum('owner', 'interviewer', 'candidate', 'observer', name='userrole')
-GuestRole = SQLEnum('candidate', 'observer', name='guestrole')
+import enum
+
+
+class SessionState(str, enum.Enum):
+    draft = 'draft'
+    live = 'live'
+    ended = 'ended'
+    archived = 'archived'
+
+
+class UserRole(str, enum.Enum):
+    owner = 'owner'
+    interviewer = 'interviewer'
+    candidate = 'candidate'
+    observer = 'observer'
+
+
+class GuestRole(str, enum.Enum):
+    candidate = 'candidate'
+    observer = 'observer'
 
 class User(Base):
     __tablename__ = 'users'
@@ -41,7 +58,7 @@ class InterviewSession(Base):
     owner_user_id = Column(String, ForeignKey('users.id'), nullable=False)
     title = Column(String(255), nullable=False)
     prompt = Column(Text, nullable=True)
-    state = Column(SessionState, default='draft', nullable=False)
+    state = Column(SQLEnum(SessionState, values_callable=lambda e: [m.value for m in e], name='sessionstate'), default=SessionState.draft, nullable=False)
     candidate_editing_enabled = Column(Boolean, default=True, nullable=False)
     scheduled_at = Column(DateTime, nullable=True)
     started_at = Column(DateTime, nullable=True)
@@ -61,7 +78,7 @@ class SessionMembership(Base):
     session_id = Column(String, ForeignKey('interview_sessions.id'), primary_key=True)
     user_id = Column(String, ForeignKey('users.id'), primary_key=True, nullable=True)
     guest_participant_id = Column(String, ForeignKey('participants.id'), primary_key=True, nullable=True)
-    role = Column(UserRole, nullable=False)
+    role = Column(SQLEnum(UserRole, values_callable=lambda e: [m.value for m in e], name='userrole'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
@@ -74,7 +91,7 @@ class GuestLink(Base):
     id = Column(String, primary_key=True)
     session_id = Column(String, ForeignKey('interview_sessions.id'), nullable=False)
     token_hash = Column(String(255), nullable=False)
-    role_granted = Column(GuestRole, nullable=False)
+    role_granted = Column(SQLEnum(GuestRole, values_callable=lambda e: [m.value for m in e], name='guestrole'), nullable=False)
     expires_at = Column(DateTime, nullable=True)
     max_uses = Column(Integer, nullable=True)
     revoked_at = Column(DateTime, nullable=True)
@@ -90,7 +107,7 @@ class Participant(Base):
     session_id = Column(String, ForeignKey('interview_sessions.id'), nullable=False)
     user_id = Column(String, ForeignKey('users.id'), nullable=True)
     display_name = Column(String(255), nullable=False)
-    role = Column(UserRole, nullable=False)
+    role = Column(SQLEnum(UserRole, values_callable=lambda e: [m.value for m in e], name='userrole'), nullable=False)
     joined_at = Column(DateTime, default=datetime.utcnow)
     left_at = Column(DateTime, nullable=True)
     color = Column(String(7), nullable=False)  # Hex color code
