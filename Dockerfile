@@ -35,6 +35,11 @@ COPY backend/ ./backend/
 WORKDIR /app/backend
 RUN uv sync --frozen
 
+# Install PostgreSQL client (for potential connections)
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy frontend build artifacts from stage 1
 COPY --from=frontend-builder /app/frontend/dist ./frontend-dist
 

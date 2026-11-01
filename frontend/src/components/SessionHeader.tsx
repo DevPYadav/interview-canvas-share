@@ -1,4 +1,4 @@
-import { FaPlay, FaStop, FaArrowLeft, FaShare } from 'react-icons/fa';
+import { FaStop, FaArrowLeft, FaShare } from 'react-icons/fa';
 import type { InterviewSession, User } from '../types';
 import './SessionHeader.css';
 

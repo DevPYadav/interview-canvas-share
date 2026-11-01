@@ -1,12 +1,12 @@
 import { mockUser, mockSessions, mockParticipants, mockCanvasDocument, mockGuestLink } from './mockData';
 import type { User, InterviewSession, Participant, CanvasDocument, GuestLink } from '../types';
-import type { ApiService } from './api';
+import type { ApiService, SessionSocket } from './api';
 
-class MockWebSocket {
+class MockWebSocket implements SessionSocket {
   private handlers: Map<string, (data: any) => void> = new Map();
-  private interval: NodeJS.Timeout | null = null;
+  private interval: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private sessionId: string) {
+  constructor(_sessionId: string) {
     // Simulate real-time updates
     this.interval = setInterval(() => {
       this.emit('presence_update', {
@@ -115,7 +115,7 @@ class MockApiService implements ApiService {
   }
 
   async duplicateSession(sessionId: string): Promise<InterviewSession> {
-    const original = await this.getSession(sessionId);
+    const original = await this.getSession('session-1');
     const newSession = await this.createSession(
       `${original.title} (Copy)`,
       original.prompt
@@ -142,7 +142,7 @@ class MockApiService implements ApiService {
     };
   }
 
-  async revokeGuestLink(sessionId: string, linkId: string): Promise<void> {
+  async revokeGuestLink(_sessionId: string, _linkId: string): Promise<void> {
     // Mock implementation - would remove link in real implementation
   }
 
@@ -150,12 +150,12 @@ class MockApiService implements ApiService {
     return this.participants.get(sessionId) || [];
   }
 
-  async joinSession(token: string, displayName: string): Promise<{ session: InterviewSession; participant: Participant }> {
+  async joinSession(_token: string, displayName: string): Promise<{ session: InterviewSession; participant: Participant }> {
     const session = this.sessions[0]; // Mock: always join first session
     const participant: Participant = {
       id: `participant-${Date.now()}`,
       session_id: session.id,
-      display_name,
+      display_name: displayName,
       role: 'candidate',
       joined_at: new Date().toISOString(),
       color: '#EF4444',
@@ -192,8 +192,8 @@ class MockApiService implements ApiService {
     return canvas;
   }
 
-  connectToSession(sessionId: string, token: string): WebSocket {
-    return new MockWebSocket(sessionId) as any;
+  connectToSession(sessionId: string, _token: string): SessionSocket {
+    return new MockWebSocket(sessionId);
   }
 }
 

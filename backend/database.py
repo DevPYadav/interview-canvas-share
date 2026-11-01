@@ -11,7 +11,19 @@ load_dotenv()
 DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///interview_canvas.db')
 
 # Create engine - database-agnostic (works with SQLite, Postgres, etc.)
-engine = create_engine(DATABASE_URL, echo=False)
+# For PostgreSQL, add connection pooling and SSL configuration
+if DATABASE_URL.startswith('postgresql'):
+    engine = create_engine(
+        DATABASE_URL,
+        echo=False,
+        pool_pre_ping=True,  # Verify connections before using
+        pool_size=5,  # Connection pool size
+        max_overflow=10,  # Max additional connections
+    )
+else:
+    # SQLite configuration
+    engine = create_engine(DATABASE_URL, echo=False)
+
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 Base = declarative_base()

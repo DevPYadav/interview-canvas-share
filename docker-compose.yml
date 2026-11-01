@@ -8,8 +8,23 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///interview_canvas.db
+      - DATABASE_URL=postgresql://interview_user:interview_pass@postgres:5432/interview_canvas
       - PYTHONUNBUFFERED=1
-    volumes:
-      - ./backend/interview_canvas.db:/app/backend/interview_canvas.db
+    depends_on:
+      - postgres
     restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=interview_canvas
+      - POSTGRES_USER=interview_user
+      - POSTGRES_PASSWORD=interview_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

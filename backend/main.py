@@ -22,10 +22,16 @@ app.add_middleware(
 
 # Serve frontend static files
 frontend_dist_path = os.path.join(os.path.dirname(__file__), "frontend-dist")
-if os.path.exists(frontend_dist_path):
-    app.mount("/static", StaticFiles(directory=frontend_dist_path), name="static")
+HAS_FRONTEND = os.path.isdir(frontend_dist_path)
+if HAS_FRONTEND:
+    # index.html references /assets/..., so mount the assets folder at /assets
+    app.mount(
+        "/assets",
+        StaticFiles(directory=os.path.join(frontend_dist_path, "assets")),
+        name="assets",
+    )
 
-    @app.get("/")
+    @app.get("/", include_in_schema=False)
     async def serve_frontend():
         return FileResponse(os.path.join(frontend_dist_path, "index.html"))
 else:
@@ -106,10 +112,6 @@ def get_db_session():
 @app.on_event("startup")
 async def startup_event():
     init_db()
-
-@app.get("/")
-async def root():
-    return {"message": "Interview Canvas API"}
 
 @app.get("/health")
 async def health():
@@ -419,3 +421,14 @@ async def update_canvas(session_id: str, canvas_data: CanvasDocumentModel, db: S
     db.refresh(canvas)
     
     return canvas
+
+
+# Serve top-level static files (favicon.svg, icons.svg) from the built frontend.
+# Registered last so it never shadows API routes.
+if HAS_FRONTEND:
+    @app.get("/{filename}", include_in_schema=False)
+    async def frontend_file(filename: str):
+        candidate = os.path.join(frontend_dist_path, filename)
+        if os.path.isfile(candidate):
+            return FileResponse(candidate)
+        return FileResponse(os.path.join(frontend_dist_path, "index.html"))

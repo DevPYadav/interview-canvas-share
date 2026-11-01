@@ -10,7 +10,7 @@ interface DashboardProps {
   onJoinSession: (token: string) => void;
 }
 
-function Dashboard({ user, onCreateSession, onSelectSession, onJoinSession }: DashboardProps) {
+function Dashboard({ user: _user, onCreateSession, onSelectSession, onJoinSession }: DashboardProps) {
   const [sessions, setSessions] = useState<InterviewSession[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newTitle, setNewTitle] = useState('');

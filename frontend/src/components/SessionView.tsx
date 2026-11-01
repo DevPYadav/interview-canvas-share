@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import type { InterviewSession, User, CanvasDocument, CanvasElement } from '../types';
+import type { InterviewSession, User, CanvasDocument } from '../types';
+import type { SessionSocket } from '../services/api';
 import { apiService } from '../services';
 import Canvas from './Canvas';
 import SessionHeader from './SessionHeader';
@@ -17,7 +18,7 @@ function SessionView({ session, user, onBack }: SessionViewProps) {
   const [canvas, setCanvas] = useState<CanvasDocument | null>(null);
   const [participants, setParticipants] = useState<any[]>([]);
   const [isConnected, setIsConnected] = useState(false);
-  const wsRef = useRef<WebSocket | null>(null);
+  const wsRef = useRef<SessionSocket | null>(null);
 
   useEffect(() => {
     loadCanvas();
@@ -44,8 +45,8 @@ function SessionView({ session, user, onBack }: SessionViewProps) {
   const connectWebSocket = () => {
     try {
       const ws = apiService.connectToSession(session.id, 'mock-token');
-      wsRef.current = ws as any;
-      
+      wsRef.current = ws;
+
       ws.on('connect', () => {
         setIsConnected(true);
       });
@@ -57,7 +58,7 @@ function SessionView({ session, user, onBack }: SessionViewProps) {
       });
 
       ws.on('presence_update', (data: any) => {
-        setParticipants(prev => prev.map(p => 
+        setParticipants(prev => prev.map(p =>
           p.id === data.participant_id ? { ...p, ...data } : p
         ));
       });
