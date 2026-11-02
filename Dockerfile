@@ -55,7 +55,6 @@ EXPOSE 8000
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV DATABASE_URL=sqlite:///interview_canvas.db
-ENV VITE_USE_MOCK=false
 
 # Run the application
 CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

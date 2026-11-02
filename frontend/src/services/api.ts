@@ -25,7 +25,7 @@ export interface ApiService {
 
   // Participants
   getParticipants(sessionId: string): Promise<Participant[]>;
-  joinSession(token: string, displayName: string): Promise<{ session: InterviewSession; participant: Participant }>;
+  joinSession(token: string, display_name: string): Promise<{ session: InterviewSession; participant: Participant }>;
 
   // Canvas
   getCanvas(sessionId: string): Promise<CanvasDocument>;

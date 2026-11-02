@@ -6,4 +6,4 @@ import { httpApiService } from './httpApi';
 export const apiService: ApiService =
   import.meta.env.VITE_USE_MOCK === 'true' ? mockApiService : httpApiService;
 
-export * from './api';
+export type * from './api';

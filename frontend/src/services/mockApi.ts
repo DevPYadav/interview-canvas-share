@@ -150,12 +150,12 @@ class MockApiService implements ApiService {
     return this.participants.get(sessionId) || [];
   }
 
-  async joinSession(_token: string, displayName: string): Promise<{ session: InterviewSession; participant: Participant }> {
+  async joinSession(_token: string, display_name: string): Promise<{ session: InterviewSession; participant: Participant }> {
     const session = this.sessions[0]; // Mock: always join first session
     const participant: Participant = {
       id: `participant-${Date.now()}`,
       session_id: session.id,
-      display_name: displayName,
+      display_name: display_name,
       role: 'candidate',
       joined_at: new Date().toISOString(),
       color: '#EF4444',
