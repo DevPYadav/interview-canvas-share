@@ -83,16 +83,16 @@ class ParticipantCreate(BaseModel):
 class CanvasElementModel(BaseModel):
     id: str
     type: str
-    x: int
-    y: int
-    width: Optional[int]
-    height: Optional[int]
-    label: Optional[str]
-    description: Optional[str]
-    color: Optional[str]
-    style: Optional[str]
-    connections: Optional[str]
-    parent_id: Optional[str]
+    x: float
+    y: float
+    width: Optional[float] = None
+    height: Optional[float] = None
+    label: Optional[str] = None
+    description: Optional[str] = None
+    color: Optional[str] = None
+    style: Optional[str] = None
+    connections: Optional[str] = None
+    parent_id: Optional[str] = None
 
 class CanvasDocumentModel(BaseModel):
     id: str
