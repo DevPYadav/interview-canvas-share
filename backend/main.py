@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 import os
+import uuid
 
 from database import engine, SessionLocal, get_db, init_db, Base, User, InterviewSession, SessionMembership, GuestLink, Participant, CanvasDocument, CanvasElement, SessionState, UserRole, GuestRole
 
@@ -120,8 +121,11 @@ async def health():
 # User endpoints
 @app.post("/v1/users", response_model=UserResponse)
 async def create_user(user: UserCreate, db: Session = Depends(get_db_session)):
+    existing = db.query(User).filter(User.email == user.email).first()
+    if existing:
+        return existing
     db_user = User(
-        id=f"user-{datetime.utcnow().timestamp()}",
+        id=f"user-{uuid.uuid4()}",
         email=user.email,
         display_name=user.display_name,
         organization_id=user.organization_id
@@ -238,7 +242,7 @@ async def duplicate_session(session_id: str, db: Session = Depends(get_db_sessio
     
     current_user = await get_current_user(db)
     new_session = InterviewSession(
-        id=f"session-{datetime.utcnow().timestamp()}",
+        id=f"session-{uuid.uuid4()}",
         owner_user_id=current_user.id,
         title=f"{original.title} (Copy)",
         prompt=original.prompt,
@@ -256,7 +260,7 @@ async def duplicate_session(session_id: str, db: Session = Depends(get_db_sessio
     if original_canvas:
         # Copy elements
         new_canvas = CanvasDocument(
-            id=f"canvas-{datetime.utcnow().timestamp()}",
+            id=f"canvas-{uuid.uuid4()}",
             session_id=new_session.id,
             schema_version=original_canvas.schema_version
         )
@@ -265,7 +269,7 @@ async def duplicate_session(session_id: str, db: Session = Depends(get_db_sessio
         
         for element in original_canvas.elements:
             new_element = CanvasElement(
-                id=f"el-{datetime.utcnow().timestamp()}",
+                id=f"el-{uuid.uuid4()}",
                 canvas_document_id=new_canvas.id,
                 type=element.type,
                 x=element.x,
@@ -376,7 +380,7 @@ async def get_canvas(session_id: str, db: Session = Depends(get_db_session)):
         id=canvas.id,
         session_id=canvas.session_id,
         schema_version=canvas.schema_version,
-        elements=elements,
+        elements=[CanvasElementModel.model_validate(e, from_attributes=True) for e in elements],
         updated_at=canvas.updated_at
     )
 
