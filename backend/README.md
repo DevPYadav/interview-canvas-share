@@ -45,8 +45,34 @@ docker-compose up --build
 
 ## Testing
 
+### Unit Tests
 ```bash
 uv run pytest
 ```
 
-Tests use in-memory SQLite and do not require PostgreSQL.
+Unit tests use in-memory SQLite and do not require PostgreSQL.
+
+### Integration Tests
+Integration tests run against a real PostgreSQL database (docker-compose).
+
+```bash
+# Start docker-compose first
+docker-compose up -d
+
+# Run integration tests
+export TEST_DATABASE_URL=postgresql://sdip:sdip@localhost:5432/sdip
+export API_BASE_URL=http://localhost:8000
+uv run pytest test_integration.py
+```
+
+Integration tests cover:
+- Database connection and schema
+- User management
+- Session lifecycle (create, update, start, end, duplicate)
+- Guest links (create, join, revoke)
+- Participants management
+- Canvas operations
+- CORS and security
+- Complete user flows
+- Guest join flows
+- Service health

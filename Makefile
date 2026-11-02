@@ -1,4 +1,4 @@
-.PHONY: help install install-frontend install-backend dev dev-frontend dev-backend run test test-frontend test-backend build clean
+.PHONY: help install install-frontend install-backend dev dev-frontend dev-backend run test test-frontend test-backend test-integration build clean
 
 help:
 	@echo "Interview Canvas Application"
@@ -13,7 +13,8 @@ help:
 	@echo "  make run               - Start backend with PostgreSQL (uses DATABASE_URL or SDIP_DATABASE_URL)"
 	@echo "  make test              - Run all tests"
 	@echo "  make test-frontend     - Run frontend tests"
-	@echo "  make test-backend      - Run backend tests"
+	@echo "  make test-backend      - Run backend unit tests"
+	@echo "  make test-integration  - Run backend integration tests (requires docker-compose)"
 	@echo "  make build             - Build frontend for production"
 	@echo "  make clean             - Clean build artifacts"
 
@@ -59,6 +60,10 @@ test-frontend:
 test-backend:
 	@echo "Running backend tests..."
 	@cd backend && uv run pytest
+
+test-integration:
+	@echo "Running backend integration tests (requires docker-compose)..."
+	@cd backend && uv run pytest test_integration.py
 
 build:
 	@echo "Building frontend..."
