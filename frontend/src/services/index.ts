@@ -1,8 +1,9 @@
 import type { ApiService } from './api';
 import { mockApiService } from './mockApi';
+import { httpApiService } from './httpApi';
 
-// Export the mock API service as the default implementation
-export const apiService: ApiService = mockApiService;
+// Set VITE_USE_MOCK=true to run the UI on mock data
+export const apiService: ApiService =
+  import.meta.env.VITE_USE_MOCK === 'true' ? mockApiService : httpApiService;
 
-// Re-export types
 export * from './api';

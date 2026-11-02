@@ -8,7 +8,7 @@ from typing import Optional, List
 from datetime import datetime
 import os
 
-from database import engine, get_db, init_db, Base, User, InterviewSession, SessionMembership, GuestLink, Participant, CanvasDocument, CanvasElement, SessionState, UserRole, GuestRole
+from database import engine, SessionLocal, get_db, init_db, Base, User, InterviewSession, SessionMembership, GuestLink, Participant, CanvasDocument, CanvasElement, SessionState, UserRole, GuestRole
 
 app = FastAPI(title="Interview Canvas API", version="1.0.0")
 
